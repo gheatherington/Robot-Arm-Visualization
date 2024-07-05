@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot name="robot_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="properties.xacro" />
+    <xacro:include filename="macros.xacro" />
+
+    <link name="world"/>
+
+    <joint name="base_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <parent link="world"/>
+        <child link="base_link"/>
+    </joint>
+
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.0" length="0.0"/>
+            </geometry>
+        </visual>
+    </link>
+</robot>
