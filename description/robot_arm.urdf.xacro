@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
-<robot name="robot_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="robot_arm"
+    xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:include filename="properties.xacro" />
     <xacro:include filename="macros.xacro" />
 
     <link name="world"/>
 
+    <!-- Fixxed base section -->
     <joint name="base_joint" type="fixed">
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <parent link="world"/>
@@ -13,10 +15,156 @@
 
     <link name="base_link">
         <visual>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <origin xyz="0 0 ${properties['base']['height'] / 2}" rpy="0 0 0"/>
             <geometry>
-                <cylinder radius="0.0" length="0.0"/>
+                <cylinder radius="${properties['base']['diameter'] / 2}" length="${properties['base']['height']}"/>
             </geometry>
+            <material name="silver"/>
         </visual>
+        <collision>
+            <origin xyz="0 0 ${properties['base']['height'] / 2}" rpy="0 0 0"/>
+            <geometry>
+                <cylinder radius="${properties['base']['diameter'] / 2}" length="${properties['base']['height']}"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_cylinder mass="${properties['base']['mass']}" length="${properties['base']['height']}" radius="${properties['base']['diameter'] / 2}">
+            <orgin xyz="0 0 ${properties['base']['height'] / 2}" rpy="0 0 0" />
+        </xacro:inertial_cylinder>
     </link>
+
+    <!-- Rotary torso plate joint to base -->
+    <joint name="torso_plate_joint" type="revolute">
+        <origin xyz="0 0 ${properties['base']['height'] + 0.01}" rpy="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="torso_plate_link"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="${properties['torso']['lower_limit']}" upper="${properties['torso']['upper_limit']}" velocity="100" effort="100"/> 
+    </joint>
+
+    <link name="torso_plate_link">
+        <visual>
+            <origin xyz="0 0 ${properties['torso']['plate_height'] / 2}" rpy="0 0 ${properties['torso']['upper_limit']}"/>
+            <geometry>
+                <cylinder radius="${properties['torso']['diameter'] / 2}" length="${properties['torso']['plate_height']}"/>
+            </geometry>
+            <material name="silver"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 ${properties['torso']['plate_height'] / 2}" rpy="0 0 ${properties['torso']['upper_limit']}"/>
+            <geometry>
+                <cylinder radius="${properties['torso']['diameter'] / 2}" length="${properties['torso']['plate_height']}"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_cylinder mass="${properties['torso']['mass']}" length="${properties['torso']['plate_height']}" radius="${properties['torso']['diameter'] / 2}">
+            <origin xyz="0 0 ${properties['torso']['plate_height'] / 2}" rpy="0 0 ${properties['torso']['upper_limit']}"/>
+        </xacro:inertial_cylinder>
+    </link>
+
+    <!-- Right torso side for sholder cross member -->
+    <joint name="right_torso_side_joint" type="fixed">
+        <origin xyz="-${properties['torso']['side']['offset']} 0 0" rpy="0 0 0"/>
+        <parent link="torso_plate_link"/>
+        <child link="right_torso_side_link"/>
+    </joint>
+
+    <link name="right_torso_side_link">
+        <visual>
+            <origin xyz="0 0 ${properties['torso']['side']['height'] / 2}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${properties['torso']['side']['width']} ${properties['torso']['side']['length']} ${properties['torso']['side']['height']}"/>
+            </geometry>
+            <material name="silver" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 ${properties['torso']['side']['height'] / 2}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${properties['torso']['side']['width']} ${properties['torso']['side']['length']} ${properties['torso']['side']['height']}"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="${properties['torso']['side']['mass']}" x="${properties['torso']['side']['width']}" y="${properties['torso']['side']['length']}" z="${properties['torso']['side']['height']}" >
+            <origin xyz="0 0 ${properties['torso']['side']['height'] / 2}" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <!-- Left torso side for sholder cross member -->
+    <joint name="left_torso_side_joint" type="fixed">
+        <origin xyz="${properties['torso']['side']['offset']} 0 0" rpy="0 0 0"/>
+        <parent link="torso_plate_link"/>
+        <child link="left_torso_side_link"/>
+    </joint>
+
+    <link name="left_torso_side_link">
+        <visual>
+            <origin xyz="0 0 ${properties['torso']['side']['height'] / 2}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${properties['torso']['side']['width']} ${properties['torso']['side']['length']} ${properties['torso']['side']['height']}"/>
+            </geometry>
+            <material name="silver" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 ${properties['torso']['side']['height'] / 2}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${properties['torso']['side']['width']} ${properties['torso']['side']['length']} ${properties['torso']['side']['height']}"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="${properties['torso']['side']['mass']}" x="${properties['torso']['side']['width']}" y="${properties['torso']['side']['length']}" z="${properties['torso']['side']['height']}" >
+            <origin xyz="0 0 ${properties['torso']['side']['height'] / 2}" rpy="0 0 0"/>
+        </xacro:inertial_box>
+    </link>
+    
+    <!-- Shoulder cross member -->
+    <joint name="shoulder_cross_joint" type="fixed">
+        <origin xyz="-${properties['torso']['side']['offset']} 0 ${properties['shoulder']['crossmember']['height']}" rpy="0 0 0"/>
+        <parent link="torso_plate_link"/>
+        <child link="shoulder_cross_link"/>
+    </joint>
+
+    <link name="shoulder_cross_link">
+        <visual>
+            <origin xyz="${properties['shoulder']['crossmember']['length'] / 2} 0 0" rpy="0 ${pi/2} 0"/>
+            <geometry>
+                <cylinder radius="${properties['shoulder']['crossmember']['diameter'] / 2}" length="${properties['shoulder']['crossmember']['length']}"/>
+            </geometry>
+            <material name="silver" />
+        </visual>
+        <collision>
+           <origin xyz="${properties['shoulder']['crossmember']['length'] / 2} 0 0" rpy="0 ${pi/2} 0"/>
+            <geometry>
+                <cylinder radius="${properties['shoulder']['crossmember']['diameter'] / 2}" length="${properties['shoulder']['crossmember']['length']}"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_cylinder mass="${properties['shoulder']['crossmember']['mass']}" length="${properties['shoulder']['crossmember']['length']}" radius="${properties['shoulder']['crossmember']['diameter'] / 2}">
+            <origin xyz="0 0 ${properties['torso']['plate_height'] / 2}" rpy="0 0 ${properties['torso']['upper_limit']}"/>
+        </xacro:inertial_cylinder>
+    </link>
+
+    <!-- Primary shoulder joint & biceps -->
+    <joint name="shoulder_joint" type="revolute">
+        <origin xyz="${properties['torso']['side']['offset']} 0 0" rpy="0 0 0"/>
+        <parent link="shoulder_cross_link"/>
+        <child link="biceps_link"/>
+        <axis xyz="1 0 0"/>
+        <limit lower="${properties['shoulder']['lower_limit']}" upper="${properties['shoulder']['upper_limit']}" velocity="100" effort="100"/> 
+    </joint>
+
+    <link name="biceps_link">
+        <visual>
+            <origin xyz="0 0 ${properties['biceps']['length'] / 2 - properties['biceps']['offset']}" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="${properties['biceps']['width']} ${properties['biceps']['height']} ${properties['biceps']['length']}"/>
+            </geometry>
+            <material name="silver" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 ${properties['biceps']['length'] / 2 - properties['biceps']['offset']}" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="${properties['biceps']['width']} ${properties['biceps']['height']} ${properties['biceps']['length']}"/>
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="${properties['biceps']['mass']}" x="${properties['biceps']['width']}" y="${properties['biceps']['height']}" z="${properties['biceps']['length']}" >
+            <origin xyz="0 0 ${properties['biceps']['length'] / 2 - properties['biceps']['offset']}" rpy="0.0 0.0 0.0"/>
+        </xacro:inertial_box>
+    </link>
+
+    <xacro:include filename="gazebo.xacro"/>
 </robot>

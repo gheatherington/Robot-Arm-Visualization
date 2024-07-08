@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:arg name="arm_name" default="arm_1"/>
+    
+    <xacro:property name="property_file" value="$(find robot_arm_visualization)/description/$(arg arm_name).properties.yaml"/>
+    <xacro:property name="properties" value="${xacro.load_yaml(property_file)}" />
+
+    <material name="silver">
+        <color rgba=".88 .88 .88 1"/>
+    </material>
+
+</robot>
