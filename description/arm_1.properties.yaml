@@ -8,6 +8,21 @@ shoulder:
     length: 0.12
     mass: 2
     height: 0.26
+support_arm:
+  crossmember:
+    upper_limit: !radians pi * 2
+    lower_limit: !radians -(pi * 2)
+    length: 0.11
+    width: 0.02
+    height: 0.02 
+    mass: 0.5
+  main:
+    upper_limit: !radians pi * 2
+    lower_limit: !radians -(pi * 2)
+    length: 0.285
+    width: 0.02
+    height: 0.02 
+    mass: 0.5
 biceps:
   length: 0.45
   offset: 0.17
@@ -15,9 +30,13 @@ biceps:
   height: 0.025
   mass: 2
 forearm:
-  length: 0.59
+  length: 0.72
+  offset: 0.12
   width: 0.0125
   height: 0.0125
+  mass: 2
+  upper_limit: !radians pi * 2
+  lower_limit: !radians -(pi * 2)
 base:
   height: 0.385
   diameter: 0.34
@@ -30,7 +49,7 @@ torso:
   upper_limit: !radians (pi * 3) / 4
   side:
     width: 0.03
-    length: 0.34
+    length: 0.25
     height: 0.30
     offset: 0.06
     mass: 2
