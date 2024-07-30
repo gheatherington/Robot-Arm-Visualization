@@ -1,0 +1,4 @@
+gazebo:
+  ros__parameters:
+    # Publish rate for gazebo in hz
+    publish_rate: 500.0

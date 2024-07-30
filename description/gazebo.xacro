@@ -23,8 +23,57 @@
     </xacro:macro>
 
     <!-- define the list of items to iterate -->
-    <xacro:property name="items" value="${['base_link', 'torso_plate_link', 'right_torso_side_link', 'left_torso_side_link', 'shoulder_cross_link', 'biceps_link']}" />
+    <xacro:property name="items" value="${['base_link', 'plate_link', 'right_side_link', 'left_side_link', 'cross_link', 'biceps_link', 'forearm_link', 'support_brace_link', 'support_arm_link']}" />
 
     <xacro:loop items="${list(items)}"/>
+
+    <!-- Configuration for ros2_control with gazebo -->
+    <ros2_control name="RobotArmVisualization" type="system">
+        <hardware>
+            <!-- Hardware interface(s) plugin being loaded -->
+            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+        </hardware>
+        <!-- List of joints that hardware inerface is talking to in the URDF file -->
+        <joint name="torso_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position" />
+        </joint>
+        <joint name="shoulder_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position" />
+        </joint>
+        <joint name="elbow_joint">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position" />
+        </joint>
+        <joint name="elbow_mimic_joint">
+            <state_interface name="position" />
+        </joint>
+        <joint name="brace_cross_joint">
+            <state_interface name="position" />
+        </joint>
+        <joint name="support_elbow_mimic_joint">
+            <state_interface name="position" />
+        </joint>
+        <joint name="support_shoulder_mimic_joint">
+            <state_interface name="position" />
+        </joint>
+    </ros2_control>
+
+    <gazebo>
+        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+            <!-- Load in controllers specified in my_controllers.yaml (Currently causing gzserver to fail when running launch script) -->
+            <!-- <parameters>$(find robot_arm_visualization)/config/my_controllers.yaml</parameters> -->
+        </plugin>
+    </gazebo>
 
 </robot>

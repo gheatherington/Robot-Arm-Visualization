@@ -14,7 +14,7 @@ def launch_setup(context, path: str, arm, *args, **kwargs):
     # Use xacro to process the file
     robot_description_raw = xacro.process_file(path, mappings={"arm_name": arm_str}).toxml()
 
-    # Configure the node
+    # Configure and return the robot_state_publisher node
     return  [Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -28,13 +28,18 @@ def generate_launch_description():
     pkg_name = 'robot_arm_visualization'
     xacro_file = os.path.join(get_package_share_directory(pkg_name), 'description', 'robot_arm.urdf.xacro')
 
+    # Obtain path to gazebo parameters file
+    gazebo_params_file = os.path.join(get_package_share_directory(pkg_name), 'config', 'gazebo_params.yaml')
+
+    # Configure the execution for the gazebo launch file, to launch gazebo with the parameters file as an argument
     gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),)
+        PythonLaunchDescriptionSource([os.path.join(get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),
+        launch_arguments={'extra_gazebo_arms': '--ros-args --params-file ' + gazebo_params_file}.items())
 
-
+    # Configure node to spawn the robot arm from the description that was published to the robot_description topic by the robot_state_publisher node
     spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py', arguments=['-topic', 'robot_description','-entity', 'robot_arm'], output='screen')
 
-    # Run the node
+    # Run the nodes
     return LaunchDescription([
         DeclareLaunchArgument('arm', default_value="arm_1"),
         gazebo,

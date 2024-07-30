@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<robot name="robot_arm"
-    xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="robot_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:include filename="properties.xacro" />
     <xacro:include filename="macros.xacro" />
 
@@ -33,15 +32,16 @@
     </link>
 
     <!-- Rotary torso plate joint to base -->
-    <joint name="torso_plate_joint" type="revolute">
+    <joint name="torso_joint" type="revolute">
         <origin xyz="0 0 ${properties['base']['height'] + 0.01}" rpy="0 0 0"/>
         <parent link="base_link"/>
-        <child link="torso_plate_link"/>
+        <child link="plate_link"/>
         <axis xyz="0 0 1"/>
         <limit lower="${properties['torso']['lower_limit']}" upper="${properties['torso']['upper_limit']}" velocity="100" effort="100"/> 
+        <dynamics damping="10.0" friction="10.0" />
     </joint>
 
-    <link name="torso_plate_link">
+    <link name="plate_link">
         <visual>
             <origin xyz="0 0 ${properties['torso']['plate_height'] / 2}" rpy="0 0 0"/>
             <geometry>
@@ -63,11 +63,11 @@
     <!-- Right torso side for sholder cross member -->
     <joint name="right_torso_side_joint" type="fixed">
         <origin xyz="-${properties['torso']['side']['offset']} 0 0" rpy="0 0 0"/>
-        <parent link="torso_plate_link"/>
-        <child link="right_torso_side_link"/>
+        <parent link="plate_link"/>
+        <child link="right_side_link"/>
     </joint>
 
-    <link name="right_torso_side_link">
+    <link name="right_side_link">
         <visual>
             <origin xyz="0 0 ${properties['torso']['side']['height'] / 2}" rpy="0 0 0"/>
             <geometry>
@@ -89,11 +89,11 @@
     <!-- Left torso side for sholder cross member -->
     <joint name="left_torso_side_joint" type="fixed">
         <origin xyz="${properties['torso']['side']['offset']} 0 0" rpy="0 0 0"/>
-        <parent link="torso_plate_link"/>
-        <child link="left_torso_side_link"/>
+        <parent link="plate_link"/>
+        <child link="left_side_link"/>
     </joint>
 
-    <link name="left_torso_side_link">
+    <link name="left_side_link">
         <visual>
             <origin xyz="0 0 ${properties['torso']['side']['height'] / 2}" rpy="0 0 0"/>
             <geometry>
@@ -113,13 +113,13 @@
     </link>
     
     <!-- Shoulder cross member -->
-    <joint name="shoulder_cross_joint" type="fixed">
+    <joint name="cross_joint" type="fixed">
         <origin xyz="-${properties['torso']['side']['offset']} 0 ${properties['shoulder']['crossmember']['height']}" rpy="0 0 0"/>
-        <parent link="torso_plate_link"/>
-        <child link="shoulder_cross_link"/>
+        <parent link="plate_link"/>
+        <child link="cross_link"/>
     </joint>
 
-    <link name="shoulder_cross_link">
+    <link name="cross_link">
         <visual>
             <origin xyz="${properties['shoulder']['crossmember']['length'] / 2} 0 0" rpy="0 ${pi/2} 0"/>
             <geometry>
@@ -141,10 +141,11 @@
     <!-- Primary shoulder joint & biceps -->
     <joint name="shoulder_joint" type="revolute">
         <origin xyz="${properties['torso']['side']['offset']} 0 0" rpy="0 0 0"/>
-        <parent link="shoulder_cross_link"/>
+        <parent link="cross_link"/>
         <child link="biceps_link"/>
         <axis xyz="1 0 0"/>
         <limit lower="${properties['shoulder']['lower_limit']}" upper="${properties['shoulder']['upper_limit']}" velocity="100" effort="100"/> 
+        <dynamics damping="10.0" friction="10.0" />
     </joint>
 
     <link name="biceps_link">
@@ -174,21 +175,25 @@
         <child link="elbow_mimic_link"/>
         <axis xyz="1 0 0"/>
         <limit lower="${properties['forearm']['lower_limit']}" upper="${properties['forearm']['upper_limit']}" velocity="100" effort="100"/> 
+        <dynamics damping="10.0" friction="10.0" />
     </joint>
 
     <link name="elbow_mimic_link">
         <visual name="">
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0 0 0"/>
+                <box size="0.001 0.001 0.001"/>
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0 0 0"/>
+                <box size="0.001 0.001 0.001"/>
             </geometry>
         </collision>
+        <xacro:inertial_box mass="1" x="0.001" y="0.001" z="0.001" >
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
     </link>
 
     <joint name="elbow_mimic_joint" type="revolute">
@@ -198,6 +203,7 @@
         <axis xyz="1 0 0"/>
         <limit lower="${properties['forearm']['lower_limit']}" upper="${properties['forearm']['upper_limit']}" velocity="100" effort="100"/> 
         <mimic joint="shoulder_joint" multiplier="-1.0"/>
+        <dynamics damping="10.0" friction="10.0" />
     </joint>
 
     <link name="forearm_link">
@@ -220,16 +226,17 @@
     </link>
 
     <!-- Support Arm -->
-    <joint name="support_arm_cross_joint" type="revolute">
+    <joint name="brace_cross_joint" type="revolute">
         <origin xyz="${properties['torso']['side']['offset'] / 2} 0 0 " rpy="0 0 0"/> 
-        <parent link="shoulder_cross_link"/>
-        <child link="support_arm_cross_joint_link"/>
+        <parent link="cross_link"/>
+        <child link="support_brace_link"/>
         <axis xyz="1 0 0"/>
         <limit lower="${properties['support_arm']['crossmember']['lower_limit']}" upper="${properties['support_arm']['crossmember']['upper_limit']}" velocity="100" effort="100"/> 
         <mimic joint="elbow_joint" multiplier="1.0" />
+        <dynamics damping="10.0" friction="10.0" />
     </joint>
 
-    <link name="support_arm_cross_joint_link">
+    <link name="support_brace_link">
         <visual>
             <origin xyz="0 -${properties['support_arm']['crossmember']['length'] / 2} 0" rpy="0 0 ${pi / 2}"/>
             <geometry>
@@ -250,35 +257,40 @@
 
     <joint name="support_elbow_mimic_joint" type="revolute">
         <origin xyz="0 -${properties['support_arm']['crossmember']['length']} 0" rpy="0 0 0"/>
-        <parent link="support_arm_cross_joint_link"/>
-        <child link="support_arm_connection_link"/>
+        <parent link="support_brace_link"/>
+        <child link="support_mimic_link"/>
         <axis xyz="1 0 0"/>
         <limit lower="${properties['support_arm']['main']['lower_limit']}" upper="${properties['support_arm']['main']['upper_limit']}" effort="100" velocity="100"/>
         <mimic joint="elbow_joint" multiplier="-1.0" />
+        <dynamics damping="10.0" friction="10.0" />
     </joint>
 
-    <link name="support_arm_connection_link">
-        <visual>
+    <link name="support_mimic_link">
+        <visual name="">
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0 0 0"/>
+                <box size="0.001 0.001 0.001"/>
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0 0 0"/>
+                <box size="0.001 0.001 0.001"/>
             </geometry>
         </collision>
+        <xacro:inertial_box mass="1" x="0.001" y="0.001" z="0.001" >
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_box>
     </link>
     
     <joint name="support_shoulder_mimic_joint" type="revolute">
         <origin xyz="0 0 0" rpy="0 0 0"/>
-        <parent link="support_arm_connection_link"/>
+        <parent link="support_mimic_link"/>
         <child link="support_arm_link"/>
         <axis xyz="1 0 0"/>
         <limit lower="${properties['support_arm']['main']['lower_limit']}" upper="${properties['support_arm']['main']['upper_limit']}" effort="100" velocity="100"/>
         <mimic joint="shoulder_joint" multiplier="1.0" />
+        <dynamics damping="10.0" friction="10.0" />
     </joint>
 
     <link name="support_arm_link">
@@ -300,15 +312,6 @@
         </xacro:inertial_box>
     </link>
 
-    <!--<joint name="connection_joint" type="revolute" >
-        <origin xyz="0 0 ${properties['support_arm']['main']['length']}" rpy="0 0 0"/>
-        <parent link="support_arm_link"/>
-        <child link="forearm_link"/>
-        <axis xyz="1 0 0"/>
-        <limit lower="${properties['support_arm']['main']['lower_limit']}" upper="${properties['support_arm']['main']['upper_limit']}" effort="100" velocity="100"/>
-        <mimic joint="shoulder_joint" multiplier="1.0" />
-    </joint> -->
-
-    <!-- Include custom gazebo configuration to aid when switching from URDF to SDF -->
+    <!-- Include gazebo configuration to add gazebo properties and configure ros2_control -->
     <xacro:include filename="gazebo.xacro"/>
 </robot>

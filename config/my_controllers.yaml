@@ -1,0 +1,31 @@
+controller_manager:
+  ros__parameters:
+    # Update rate in hz
+    update_rate: 500.0
+    # Time used in gazebo
+    use_sim_time: true
+
+#     pid_cont:
+#       # Specify type of controller (Custom controller can be made)
+#       type: pid_controller/PidController
+
+#     # Joint State Broadcaster for the joint_state_publisher for transforms in the simulation
+    # joint_broad:
+      # type: joint_state_broadcaster/JointStateBroadcaster
+
+# # Configure parameters for the different controllers
+# #joint_broad:
+# #  ros__parameters:
+# pid_cont:
+#   ros__parameters:
+#     dof_names:
+#       - torso_joint
+    
+#     command_interface: velocity
+
+#     reference_and_state_interfaces: ["position"]
+
+#     gains:
+#       torso_joint: {p: 1.0, i: 0.0, d: 5.0}
+
+

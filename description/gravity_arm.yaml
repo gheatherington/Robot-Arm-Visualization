@@ -1,0 +1,58 @@
+# All distance measurements are in meters
+# All mass measurements are in kg
+
+base:
+  height: 0.385
+  diameter: 0.34
+  mass: 10
+torso:
+  lower_limit: !radians -((pi * 3) / 4)
+  upper_limit: !radians (pi * 3) / 4
+  plate:
+    height: 0.05
+    diameter: 0.34
+    mass: 5
+  side:
+    width: 0.03
+    length: 0.25
+    height: 0.30
+    offset: 0.06
+    mass: 2
+cross:
+  diameter: 0.05
+  length: 0.12
+  mass: 2
+  height: 0.26
+shoulder:
+  lower_limit: !radians -(pi * 2)
+  upper_limit: !radians pi * 2
+biceps:
+  length: 0.45
+  offset: 0.17
+  width: 0.025
+  height: 0.025
+  mass: 2
+elbow:
+  lower_limit: !radians -(pi * 2)
+  upper_limit: !radians pi * 2
+forearm:
+  length: 0.72
+  offset: 0.12
+  width: 0.0125
+  height: 0.0125
+  mass: 2
+support:
+  arm:
+    upper_limit: !radians pi * 2
+    lower_limit: !radians -(pi * 2)
+    length: 0.285
+    width: 0.02
+    height: 0.02 
+    mass: 0.5
+  brace:
+    upper_limit: !radians pi * 2
+    lower_limit: !radians -(pi * 2)
+    length: 0.11
+    width: 0.02
+    height: 0.02 
+    mass: 0.5
