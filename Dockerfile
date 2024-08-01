@@ -38,9 +38,14 @@ WORKDIR /ros2_ws/
 RUN \
     echo "\nsource /opt/ros/humble/setup.bash\nsource /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash\nsource /ros2_ws/install/setup.bash" >> ~/.bashrc
 
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT [ "/bin/bash", "/entrypoint.sh" ]
+
 #CMD ["ros2", "launch", "robot_arm_visualization", "robot_state_publisher_sim.launch.py"]
+CMD ["bash"]
 
 USER root
 
 # Docker Build Command: docker build -t gheatherington/arm_visualization:{VERSION} .
-# Docker Run Command: docker run -it --user ros -v $PWD\:/ros2_ws/src/robot_arm_visualization/ --rm --name ros2_ws gheatherington/arm_visualization:{VERSION}
+# Docker Run Command: docker run -it --rm --user ros --name ros2_ws --hostname ros2_docker -v $PWD\:/ros2_ws/src/robot_arm_visualization/ gheatherington/arm_visualization:{VERSION}
