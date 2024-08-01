@@ -42,8 +42,8 @@ COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/bin/bash", "/entrypoint.sh" ]
 
-CMD ["ros2", "launch", "robot_arm_visualization", "robot_state_publisher_sim.launch.py"]
-#CMD ["bash"]
+#CMD ["ros2", "launch", "robot_arm_visualization", "robot_state_publisher_sim.launch.py"]
+CMD ["bash"]
 
 USER root
 
