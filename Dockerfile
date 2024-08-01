@@ -42,10 +42,10 @@ COPY entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/bin/bash", "/entrypoint.sh" ]
 
-#CMD ["ros2", "launch", "robot_arm_visualization", "robot_state_publisher_sim.launch.py"]
-CMD ["bash"]
+CMD ["ros2", "launch", "robot_arm_visualization", "robot_state_publisher_sim.launch.py"]
+#CMD ["bash"]
 
 USER root
 
 # Docker Build Command: docker build -t gheatherington/arm_visualization:{VERSION} .
-# Docker Run Command: docker run -it --rm --user ros --name ros2_ws --hostname ros2_docker -v $PWD\:/ros2_ws/src/robot_arm_visualization/ gheatherington/arm_visualization:{VERSION}
+# Docker Run Command: docker run -it --rm --user ros --name ros2_ws --network=host --ipc=host -v $PWD\ros2_pkg\:/ros2_ws/src/robot_arm_visualization/ gheatherington/arm_visualization:{VERSION}
